@@ -14,6 +14,12 @@
 
 <p align="center"><b>Developed by Mutsa Mungoshi</b></p>
 
+<p align="center">
+  <a href="https://people.clarkson.edu/~mmungosh/shibui/" target="_blank">
+    <b>➡️ Launch Live Application</b>
+  </a>
+</p>
+
 ---
 
 ## Table of Contents
