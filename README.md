@@ -1,55 +1,57 @@
 <!-- markdownlint-disable MD033 -->
 <h1 align="center">
-  Shibui <br>
-  <small>A balanced planner for work & movement</small>
+  Shibui<br>
+  <small>A Balanced Planner for Work and Movement</small>
 </h1>
 
 <p align="center">
-  <a href="https://github.com/your-org/shibui/actions">
-    <img src="https://img.shields.io/github/actions/workflow/status/your-org/shibui/ci.yml?branch=main&logo=github" alt="build">
+  <a href="https://github.com/Thooms-coder/Shibui_Planner/actions">
+    <img src="https://img.shields.io/github/actions/workflow/status/Thooms-coder/Shibui_Planner/ci.yml?branch=main&logo=github" alt="build">
   </a>
   <img src="https://img.shields.io/badge/python-3.11-blue?logo=python" alt="python">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="license">
 </p>
 
-> **by Mutsa Mungoshi**
+<p align="center"><b>Developed by Mutsa Mungoshi</b></p>
 
 ---
 
-## Table&nbsp;of&nbsp;Contents
-- [Table of Contents](#tableofcontents)
+## Table of Contents
+- [Table of Contents](#table-of-contents)
 - [Overview](#overview)
-  - [Users \& permissions](#users--permissions)
-  - [Task life-cycle](#task-life-cycle)
+  - [Users and Permissions](#users-and-permissions)
+  - [Task Life Cycle](#task-life-cycle)
 - [Test Users](#test-users)
 - [Features](#features)
 - [Relational Schema](#relational-schema)
-  - [Table summary](#table-summary)
-- [Analytics examples](#analytics-examples)
+  - [Table Summary](#table-summary)
+- [Analytics Examples](#analytics-examples)
 
 ---
 
 ## Overview
-Shibui treats **work (_Flow_)** and **physical activity (_Motion_)** as parallel parts  
-of your day—helping you schedule, execute, and reflect on both.
+**Shibui** is a Flask-based web application designed to help users achieve balance between productivity and wellness.  
+It treats **work (Flow)** and **physical activity (Motion)** as equally important components of the day—encouraging structured planning, consistent reflection, and data-driven self-awareness.
 
-| Flow sub-categories | Motion sub-categories |
-|---------------------|-----------------------|
-| Deep Work           | Cardio & Endurance    |
-| Meetings & Collab   | Strength & Resistance |
-| Creative Work       | Flexibility & Recovery|
-| Planning & Org.     | Sports & Recreation   |
-| Learning & Skills   | Outdoor & Lifestyle   |
+| Flow Sub-Categories | Motion Sub-Categories |
+|----------------------|------------------------|
+| Deep Work            | Cardio and Endurance   |
+| Meetings and Collab  | Strength and Resistance|
+| Creative Work        | Flexibility and Recovery|
+| Planning and Org.    | Sports and Recreation |
+| Learning and Skills  | Outdoor and Lifestyle  |
 
-### Users & permissions
+---
+
+### Users and Permissions
 | Role | Abilities |
-|------|-----------|
-| 🧑‍💻 **Regular** | choose mode · create / edit **own** tasks · no delete |
-| 👑 **Admin**     | assign tasks to any user · full CRUD |
+|------|------------|
+| **Regular User** | Create, edit, and view personal tasks; cannot delete shared or system tasks. |
+| **Administrator** | Assign tasks to any user and perform full CRUD operations. |
 
-### Task life-cycle
+### Task Life Cycle
 `pending → in_progress → completed`  
-*auto-progresses when start / end times elapse*
+Tasks automatically progress when their start or end times elapse.
 
 ---
 
@@ -61,11 +63,12 @@ of your day—helping you schedule, execute, and reflect on both.
 ---
 
 ## Features
-* Intensity, duration & mood tracking (before / after).
-* Auto-advancing status + cron job to catch missed transitions.
-* Admin dashboard to reassign or delete tasks.
-* Pre-defined **Flow / Motion** categories; easy to extend.
-* MySQL 8 + Flask / SQLAlchemy backend; Bootstrap 5 frontend.
+- Intensity, duration, and mood tracking before and after each task.  
+- Automatic status updates via background scheduler.  
+- Administrative dashboard for managing users and tasks.  
+- Predefined **Flow** and **Motion** categories with extensible structure.  
+- MySQL 8 backend integrated via SQLAlchemy ORM.  
+- Bootstrap 5 responsive interface for cross-device accessibility.  
 
 ---
 
@@ -74,39 +77,39 @@ of your day—helping you schedule, execute, and reflect on both.
   <img src="relational schema.png" alt="Relational Schema" width="900">
 </p>
 
-### Table summary
+### Table Summary
 
 | Table | Purpose |
-|-------|---------|
-| **mmungoshi_user** | users & roles |
-| **mmungoshi_task** | master tasks (defaults) |
-| **mmungoshi_user_task** | scheduled assignments |
-| **mmungoshi_feedback** | mood & actuals collected per run |
+|--------|----------|
+| **mmungoshi_user** | Stores user profiles and role-based access data. |
+| **mmungoshi_task** | Master list of predefined tasks and categories. |
+| **mmungoshi_user_task** | Links users to scheduled task instances. |
+| **mmungoshi_feedback** | Stores post-task reflections and mood metrics. |
 
 ---
 
-## Analytics examples
+## Analytics Examples
 > All table names include the `mmungoshi_` prefix.
 
 <details>
-<summary>show queries</summary>
+<summary>Example SQL Queries</summary>
 
 ```sql
 -- 1 · Completed tasks last week by mode
 SELECT  t.TaskCategory AS Mode,
-        COUNT(*)       AS Completed
+        COUNT(*) AS Completed
 FROM    mmungoshi_user_task ut
-JOIN    mmungoshi_task      t ON t.TaskID = ut.TaskID
-WHERE   ut.TaskStatus  = 'completed'
+JOIN    mmungoshi_task t ON t.TaskID = ut.TaskID
+WHERE   ut.TaskStatus = 'completed'
   AND   ut.TaskEndTime >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
 GROUP BY t.TaskCategory;
 
 -- 2 · Average mood delta by sub-category
 SELECT  t.TaskSubcategory,
-        ROUND(AVG(f.MoodAfter - f.MoodBefore),2) AS AvgMoodDelta
-FROM    mmungoshi_feedback      f
-JOIN    mmungoshi_user_task     ut ON ut.UserTaskID = f.UserTaskID
-JOIN    mmungoshi_task          t  ON t.TaskID      = ut.TaskID
+        ROUND(AVG(f.MoodAfter - f.MoodBefore), 2) AS AvgMoodDelta
+FROM    mmungoshi_feedback f
+JOIN    mmungoshi_user_task ut ON ut.UserTaskID = f.UserTaskID
+JOIN    mmungoshi_task t ON t.TaskID = ut.TaskID
 GROUP BY t.TaskSubcategory
 ORDER BY AvgMoodDelta DESC;
 
@@ -114,8 +117,8 @@ ORDER BY AvgMoodDelta DESC;
 SELECT  u.UserName,
         SUM(TIMESTAMPDIFF(MINUTE, ut.TaskStartTime, ut.TaskEndTime)) AS Minutes
 FROM    mmungoshi_user_task ut
-JOIN    mmungoshi_task      t  ON t.TaskID = ut.TaskID
-JOIN    mmungoshi_user      u  ON u.UserID = ut.UserID
+JOIN    mmungoshi_task t  ON t.TaskID = ut.TaskID
+JOIN    mmungoshi_user u  ON u.UserID = ut.UserID
 WHERE   t.TaskCategory = 'flow'
   AND   MONTH(ut.TaskStartTime) = MONTH(CURDATE())
   AND   YEAR (ut.TaskStartTime) = YEAR (CURDATE())
