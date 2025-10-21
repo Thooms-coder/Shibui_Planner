@@ -1,0 +1,12 @@
+db:
+  user: 'x'
+  pw: 'x'
+  host: 'x'
+  db: 'x'
+  port: 3306
+tables:
+  user: 'mmungoshi_user'
+  task: 'mmungoshi_task'
+  user_task: 'mmungoshi_user_task'
+  feedback: 'mmungoshi_feedback'
+

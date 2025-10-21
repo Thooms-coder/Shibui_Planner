@@ -1,0 +1,32 @@
+{% extends "loginbase.html" %}
+
+{% block content %}
+{% if request.args.get('logout') %}
+  <div class="alert alert-info alert-dismissible fade show" role="alert">
+    You have logged out.
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endif %}
+
+<h2 class="mb-4 text-center text-dark">Welcome to Shibui</h2>
+
+<form action="{{ url_for('login') }}" method="POST">
+  <div class="mb-3">
+    <label for="email" class="form-label text-dark">Email address</label>
+    <input type="email" name="Email" class="form-control" id="email" required>
+  </div>
+
+  <div class="mb-4">
+    <label for="password" class="form-label text-dark">Password</label>
+    <input type="password" name="Password" class="form-control" id="password" required>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <a href="#" class="link-secondary small">Forgot Password?</a>
+  </div>
+
+  <div class="d-grid gap-2">
+    <button type="submit" class="btn btn-primary">Log In</button>
+  </div>
+</form>
+{% endblock %}

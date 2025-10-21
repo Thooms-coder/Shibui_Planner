@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container py-5" style="max-width: 600px;">
+  <h2 class="text-center mb-4">Add New User</h2>
+
+  {% if obj.errors %}
+    <div class="alert alert-danger text-center mx-auto mb-4" role="alert" style="max-width:500px;">
+      {% for error in obj.errors %}
+        <div>{{ error }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="card shadow-sm bg-light rounded border-0">
+    <div class="card-body">
+      <form action="{{ url_for('manage_user', action='insert') }}" method="POST">
+        <div class="mb-3">
+          <label for="UserName" class="form-label">Name</label>
+          <input type="text" name="UserName" id="UserName" class="form-control"
+                 value="{{ obj.data[0].UserName if obj.data else '' }}" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="UserEmail" class="form-label">Email</label>
+          <input type="email" name="UserEmail" id="UserEmail" class="form-control"
+                 value="{{ obj.data[0].UserEmail if obj.data else '' }}" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="UserPassword" class="form-label">Password</label>
+          <input type="password" name="UserPassword" id="UserPassword" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="UserPassword2" class="form-label">Retype Password</label>
+          <input type="password" name="UserPassword2" id="UserPassword2" class="form-control" required>
+        </div>
+
+        <div class="mb-4">
+          <label for="UserType" class="form-label">User Type</label>
+          <select name="UserType" id="UserType" class="form-select" required>
+            {% for role in obj.user_type %}
+              <option value="{{ role.value }}"
+                {% if obj.data and obj.data[0].UserType == role.value %}selected{% endif %}>
+                {{ role.text }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="d-grid">
+          <button type="submit" class="btn btn-success w-100">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

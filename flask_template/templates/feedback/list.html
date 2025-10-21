@@ -1,0 +1,90 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container py-3" style="max-width: 680px;">
+  {% if request.args.get('welcome') %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      ✅ Logged in successfully!
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  {% endif %}
+
+  <h2 class="mb-4">Your Feedback</h2>
+
+  {% if me.UserType == 'Administrator' %}
+    <form method="get" action="{{ url_for('list_feedback') }}" class="mb-3">
+      <div class="input-group">
+        <label class="input-group-text" for="user_filter">Filter by User:</label>
+        <select class="form-select"
+                name="user_id"
+                id="user_filter"
+                onchange="this.form.submit()">
+          <option value="" {% if not request.args.get('user_id') %}selected{% endif %}>
+            All Users
+          </option>
+          {% for u in users %}
+            <option value="{{ u.UserID }}"
+                    {% if request.args.get('user_id') == u.UserID|string %}selected{% endif %}>
+              {{ u.UserName }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+    </form>
+  {% endif %}
+
+  <table class="table table-bordered table-hover">
+    <thead class="table-light">
+      <tr>
+        <th>User</th>
+        <th>Task ID</th>
+        <th>Mood Before</th>
+        <th>Mood After</th>
+        <th>Duration</th>
+        <th>Intensity</th>
+        <th>Time</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for fb in obj.data %}
+      <tr>
+        <td>{{ fb.UserName or fb.UserID }}</td>
+        <td>{{ fb.UserTaskID }}</td>
+        <td>{{ fb.MoodBefore }}</td>
+        <td>{{ fb.MoodAfter }}</td>
+        <td>{{ fb.ActualDuration }}</td>
+        <td>{{ fb.Intensity }}</td>
+        <td>{{ fb.Timestamp|format_datetime('%Y-%m-%d %H:%M') }}</td>
+        <td>
+          {% if me.UserType == 'Administrator' or fb.UserID == me.UserID %}
+            <a href="{{ url_for('list_feedback',
+                                 pkval=fb.FeedbackID,
+                                 user_id=request.args.get('user_id')) }}"
+               class="btn btn-sm btn-primary">Edit</a>
+            <a href="{{ url_for('list_feedback',
+                                 pkval=fb.FeedbackID,
+                                 action='delete',
+                                 user_id=request.args.get('user_id')) }}"
+               class="btn btn-sm btn-danger"
+               onclick="return confirm('Delete this feedback?');">Delete</a>
+          {% else %}
+            <span class="text-muted">No Access</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="mt-3">
+    <a href="{{ url_for('list_feedback',
+                         pkval='new',
+                         user_id=request.args.get('user_id')) }}"
+       class="btn btn-success">+ Submit Feedback</a>
+  </div>
+</div>
+{% endblock %}
+
+
+

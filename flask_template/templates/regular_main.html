@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container py-5" style="max-width: 680px;">
+  {% if request.args.get('welcome') %}
+    <div class="alert alert-success alert-dismissible fade show text-center mx-auto" role="alert" style="max-width: 600px;">
+      ✅ Logged in successfully!
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  {% endif %}
+
+  <h1 class="display-5 fw-bold text-center mb-3">Welcome, {{ me.UserName }}</h1>
+  <p class="lead text-center mb-4">Plan and reflect on your work and wellness tasks.</p>
+
+  <div class="card shadow-sm bg-light rounded border-0 p-4 mx-auto">
+    <h2 class="h5 mb-3">Your Tasks</h2>
+    <div class="list-group mb-4">
+      <a href="{{ url_for('list_user_tasks') }}" class="list-group-item list-group-item-action">
+        Manage Your Tasks
+      </a>
+      <a href="{{ url_for('task_history') }}" class="list-group-item list-group-item-action">
+        📈 View Task History
+      </a>
+    </div>
+
+    <h2 class="h5 mb-3">Your Feedback</h2>
+    <div class="list-group mb-4">
+      <a href="{{ url_for('list_feedback') }}" class="list-group-item list-group-item-action">
+        Manage Your Feedback
+      </a>
+    </div>
+
+    <div class="text-center">
+      <a href="{{ url_for('planner') }}" class="btn btn-primary w-100 mb-3">
+        📅 View Daily Planner
+      </a>
+      <a href="{{ url_for('logout') }}" class="btn btn-outline-danger w-100">
+        Log Out
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

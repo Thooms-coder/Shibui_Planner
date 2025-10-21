@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container py-4">
+  <h2 class="mb-4">Tasks</h2>
+
+  <!-- Add New Task button -->
+  <a href="{{ url_for('manage_task', action='insert') }}"
+     class="btn btn-success mb-3">
+    Add New Task
+  </a>
+
+  <div class="card shadow-sm">
+    <div class="card-body p-0">
+      <table class="table table-striped mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Task Name</th>
+            <th>Category</th>
+            <th>Subcategory</th>
+            <th>Default&nbsp;Intensity</th>
+            <th>Default&nbsp;Duration&nbsp;(min)</th>
+            <th style="width:140px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in tasks %}
+            <tr>
+              <td>{{ t.TaskName }}</td>
+              <td>{{ t.TaskCategory }}</td>
+              <td>{{ t.TaskSubcategory }}</td>
+              <td>{{ t.DefaultIntensity }}</td>
+              <td>{{ t.DefaultDuration }}</td>
+              <td class="d-flex gap-1">
+
+                <!-- Edit -->
+                <a href="{{ url_for('manage_task', action='update', pk=t.TaskID) }}"
+                   class="btn btn-sm btn-primary">
+                  Edit
+                </a>
+
+                <!-- Delete (POST) -->
+                <form action="{{ url_for('manage_task', action='delete', pk=t.TaskID) }}"
+                      method="POST"
+                      style="display:inline;"
+                      onsubmit="return confirm('Delete this task?');">
+                  <button type="submit" class="btn btn-sm btn-danger">
+                    Delete
+                  </button>
+                </form>
+
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="6" class="text-center text-muted">
+                No tasks found.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

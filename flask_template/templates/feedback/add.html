@@ -1,0 +1,141 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container py-4" style="max-width: 680px;">
+  <h2 class="text-center mb-4">Submit Feedback</h2>
+
+  {% if obj.errors %}
+    <div class="alert alert-danger">
+      {% for error in obj.errors %}
+        <div>{{ error }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <form
+    action="{{ url_for('list_feedback', action='insert', user_id=user_id) }}"
+    method="POST"
+  >
+    <!-- carry the filter through -->
+    <input type="hidden" name="user_id" value="{{ user_id or '' }}">
+
+    <!-- admin: choose which user to submit for -->
+    {% if me.UserType == 'Administrator' %}
+      <div class="mb-3">
+        <label for="UserID" class="form-label">User</label>
+        <select id="UserID" name="UserID" class="form-select" required>
+          <option value="" disabled {% if not obj.data[0].get('UserID') %}selected{% endif %}>
+            Select a user
+          </option>
+          {% for u in users %}
+            <option value="{{ u.UserID }}"
+                    {% if obj.data[0].get('UserID') == u.UserID %}selected{% endif %}>
+              {{ u.UserName }} ({{ u.UserEmail }})
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+    {% endif %}
+
+    <!-- Task Name Dropdown (scoped to user_id in your view) -->
+    <div class="mb-3">
+      <label for="UserTaskID" class="form-label">Task Name</label>
+      <select id="UserTaskID" name="UserTaskID" class="form-select" required>
+        <option value="" disabled {% if not obj.data[0].get('UserTaskID') %}selected{% endif %}>
+          Select a task
+        </option>
+        {% for choice in obj.choices.tasks %}
+          <option value="{{ choice.UserTaskID }}"
+                  {% if obj.data[0].get('UserTaskID') == choice.UserTaskID %}selected{% endif %}>
+            {{ choice.TaskName }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Timestamp Field -->
+    <div class="mb-3">
+      <label for="Timestamp" class="form-label">Timestamp</label>
+      <input
+        type="datetime-local"
+        class="form-control"
+        id="Timestamp"
+        name="Timestamp"
+        value="{{ now.strftime('%Y-%m-%dT%H:%M') }}"
+        required
+      >
+    </div>
+
+    <!-- Mood Before -->
+    <div class="mb-3">
+      <label for="MoodBefore" class="form-label">Mood Before</label>
+      <input
+        type="number" min="1" max="10"
+        class="form-control"
+        id="MoodBefore"
+        name="MoodBefore"
+        value="{{ obj.data[0].get('MoodBefore','') }}"
+        required
+      >
+    </div>
+
+    <!-- Mood After -->
+    <div class="mb-3">
+      <label for="MoodAfter" class="form-label">Mood After</label>
+      <input
+        type="number" min="1" max="10"
+        class="form-control"
+        id="MoodAfter"
+        name="MoodAfter"
+        value="{{ obj.data[0].get('MoodAfter','') }}"
+        required
+      >
+    </div>
+
+    <!-- Actual Duration -->
+    <div class="mb-3">
+      <label for="ActualDuration" class="form-label">Actual Duration (minutes)</label>
+      <input
+        type="number" min="1"
+        class="form-control"
+        id="ActualDuration"
+        name="ActualDuration"
+        value="{{ obj.data[0].get('ActualDuration','') }}"
+        required
+      >
+    </div>
+
+    <!-- Intensity -->
+    <div class="mb-3">
+      <label for="Intensity" class="form-label">Intensity</label>
+      <input
+        type="number" min="1" max="10"
+        class="form-control"
+        id="Intensity"
+        name="Intensity"
+        value="{{ obj.data[0].get('Intensity','') }}"
+        required
+      >
+    </div>
+
+    <!-- Comments -->
+    <div class="mb-3">
+      <label for="Comments" class="form-label">Comments</label>
+      <textarea
+        class="form-control"
+        id="Comments"
+        name="Comments"
+        rows="3"
+        required
+      >{{ obj.data[0].get('Comments','') }}</textarea>
+    </div>
+
+    <div class="d-grid">
+      <button type="submit" class="btn btn-success">Submit Feedback</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+
+

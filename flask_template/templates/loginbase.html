@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shibui Planner – Login</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+      overflow: hidden;
+      background: transparent;
+    }
+    #bg-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: -1;
+      pointer-events: none;
+    }
+    .login-box {
+      max-width: 420px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(12px);
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+      z-index: 1;
+    }
+    .flash-container {
+      position: fixed;
+      top: 20px;
+      width: 100%;
+      z-index: 1050;
+    }
+        /* Logo in navbar */
+        .navbar-brand {
+      color: #fff !important;
+    }
+
+    /* Login‐form labels */
+    .login-box label,
+    .login-box .form-label {
+      color: #000;
+      font-weight: 500;
+    }
+
+    /* Placeholder text in inputs */
+    .login-box input::placeholder {
+      color: #666;
+      opacity: 1;
+    }
+
+    /* Override the inherited white text on that specific header */
+    .login-box h2 {
+      color: #000 !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Video -->
+  <video autoplay muted loop playsinline id="bg-video">
+    <source src="{{ url_for('static', filename='bgvideo.mp4') }}" type="video/mp4">
+  </video>
+
+  <!-- Flash Messages -->
+  <div class="flash-container text-center">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-info alert-dismissible fade show d-inline-block" role="alert">
+          {{ messages[0] }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="login-box text-white">
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Auto-dismiss flash after 4 seconds
+    setTimeout(() => {
+      const alertEl = document.querySelector('.flash-container .alert');
+      if (alertEl) {
+        bootstrap.Alert.getOrCreateInstance(alertEl).close();
+      }
+    }, 4000);
+  </script>
+</body>
+</html>

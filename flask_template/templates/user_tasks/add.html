@@ -1,0 +1,250 @@
+{% extends "layout.html" %}
+
+{% set subMap = {
+  'Flow': [
+    'Deep Work',
+    'Meetings & Collaboration',
+    'Creative Work',
+    'Planning & Organization',
+    'Learning & Skill Development'
+  ],
+  'Motion': [
+    'Cardio & Endurance',
+    'Strength & Resistance',
+    'Flexibility & Recovery',
+    'Sports & Recreation',
+    'Outdoor & Active Lifestyle'
+  ]
+} %}
+
+{% block content %}
+<div class="container py-4" style="max-width:600px;">
+  <h2 class="text-center mb-4">Add / Create Task</h2>
+
+  {% if obj.errors %}
+    <div class="alert alert-danger">
+      {% for err in obj.errors %}
+        <div>{{ err }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <form
+    id="addTaskForm"
+    action="{{ url_for('manage_user_task', action='insert', user_id=user_id) }}"
+    method="POST"
+    class="card p-4 shadow-sm bg-light rounded"
+  >
+    <!-- carry the user-filter through -->
+    <input type="hidden" name="user_id" value="{{ user_id or '' }}">
+
+    <!-- admin selects assignee -->
+    {% if me.UserType == 'Administrator' %}
+      <div class="mb-3">
+        <label for="UserID" class="form-label">Assign to</label>
+        <select id="UserID" name="UserID" class="form-select" required>
+          {% for u in obj.choices.users %}
+            <option value="{{ u.UserID }}"
+              {% if u.UserID == (obj.data[0].UserID or user_id|int) %}selected{% endif %}>
+              {{ u.UserName }} ({{ u.UserEmail }})
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+    {% endif %}
+
+    <!-- Mode toggle -->
+    <div class="mb-4">
+      <label class="form-check form-check-inline">
+        <input class="form-check-input"
+               type="radio" name="task_source"
+               id="existing" value="existing" checked>
+        <span class="form-check-label">Use existing task</span>
+      </label>
+      <label class="form-check form-check-inline">
+        <input class="form-check-input"
+               type="radio" name="task_source"
+               id="new" value="new">
+        <span class="form-check-label">Create new task</span>
+      </label>
+    </div>
+
+    <!-- Existing-task fieldset -->
+    <fieldset id="existing-fieldset" class="mb-4">
+      <legend class="visually-hidden">Existing Task</legend>
+
+      <div class="mb-3">
+        <label for="TaskID" class="form-label">Select Task</label>
+        <select name="TaskID"
+                id="TaskID"
+                class="form-select"
+                required>
+          {% for t in obj.choices.tasks %}
+            <option value="{{ t.TaskID }}"
+                    data-def-int="{{ t.DefaultIntensity }}"
+                    data-def-dur="{{ t.DefaultDuration }}">
+              {{ t.TaskName }} — {{ t.TaskCategory }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="Intensity" class="form-label">
+          Override Intensity (1–10)
+        </label>
+        <input type="number"
+               id="Intensity"
+               name="Intensity"
+               class="form-control"
+               min="1" max="10">
+      </div>
+
+      <div class="mb-3">
+        <label for="ActualDuration" class="form-label">
+          Override Duration (minutes)
+        </label>
+        <input type="number"
+               id="ActualDuration"
+               name="ActualDuration"
+               class="form-control"
+               min="1">
+      </div>      
+    </fieldset>
+
+    <!-- New-task fieldset -->
+    <fieldset id="new-fieldset" class="mb-4" disabled>
+      <legend class="visually-hidden">New Task</legend>
+
+      <div class="mb-3">
+        <label for="NewTaskName" class="form-label">Task Name</label>
+        <input type="text"
+               id="NewTaskName"
+               name="NewTaskName"
+               class="form-control">
+      </div>
+
+      <div class="mb-3">
+        <label for="NewTaskCategory" class="form-label">Category</label>
+        <select id="NewTaskCategory"
+                name="NewTaskCategory"
+                class="form-select">
+          <option value="" disabled selected>Select category</option>
+          <option value="Flow">Flow</option>
+          <option value="Motion">Motion</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="NewTaskSubcategory" class="form-label">Subcategory</label>
+        <select id="NewTaskSubcategory"
+                name="NewTaskSubcategory"
+                class="form-select">
+          <option value="" disabled selected>Select subcategory</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="NewDefaultIntensity" class="form-label">
+          Default Intensity (1–10)
+        </label>
+        <input type="number"
+               id="NewDefaultIntensity"
+               name="NewDefaultIntensity"
+               class="form-control"
+               min="1" max="10">
+      </div>
+
+      <div class="mb-3">
+        <label for="NewDefaultDuration" class="form-label">
+          Default Duration (minutes)
+        </label>
+        <input type="number"
+               id="NewDefaultDuration"
+               name="NewDefaultDuration"
+               class="form-control"
+               min="1">
+      </div>
+    </fieldset>
+
+    <!-- Shared scheduling -->
+    <div class="row mb-4">
+      <div class="col">
+        <label for="ScheduledDate" class="form-label">Scheduled Date</label>
+        <input type="date"
+               id="ScheduledDate"
+               name="ScheduledDate"
+               class="form-control"
+               required>
+      </div>
+      <div class="col">
+        <label for="ScheduledTime" class="form-label">Scheduled Time</label>
+        <input type="time"
+               id="ScheduledTime"
+               name="ScheduledTime"
+               class="form-control"
+               required>
+      </div>
+    </div>
+
+    <div class="alert alert-info small">
+      Leave Intensity or Duration blank to use the default values
+      for the selected category/subcategory—applies to both existing and new tasks.
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">Add Task</button>
+  </form>
+</div>
+
+<script>
+  const subMap      = {{ subMap|tojson }};
+  const existFs     = document.getElementById('existing-fieldset');
+  const newFs       = document.getElementById('new-fieldset');
+  const rExist      = document.getElementById('existing');
+  const rNew        = document.getElementById('new');
+  const taskSel     = document.getElementById('TaskID');
+  const intensityEl = document.getElementById('Intensity');
+  const durationEl  = document.getElementById('ActualDuration');
+  const catEl       = document.getElementById('NewTaskCategory');
+  const subEl       = document.getElementById('NewTaskSubcategory');
+
+  function toggleMode() {
+    const isNew = rNew.checked;
+    existFs.disabled = isNew;
+    newFs.disabled   = !isNew;
+    existFs.style.display = isNew ? 'none' : '';
+    newFs.style.display   = isNew ? '' : '';
+
+    // populate override defaults when in existing mode
+    if (!isNew) {
+      const opt = taskSel.selectedOptions[0];
+      intensityEl.value = opt.dataset.defInt || '';
+      durationEl.value  = opt.dataset.defDur || '';
+    }
+  }
+
+  // populate new-task subcategories
+  catEl.addEventListener('change', () => {
+    subEl.innerHTML = '<option value="" disabled selected>Select subcategory</option>';
+    (subMap[catEl.value] || []).forEach(name => {
+      const o = document.createElement('option');
+      o.value = o.textContent = name;
+      subEl.appendChild(o);
+    });
+  });  
+
+  // listeners
+  rExist.addEventListener('change', toggleMode);
+  rNew.addEventListener('change', toggleMode);
+  taskSel.addEventListener('change', toggleMode);
+  window.addEventListener('DOMContentLoaded', toggleMode);
+</script>
+
+{% endblock %}
+
+
+
+
+
+
+

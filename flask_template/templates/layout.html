@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Shibui Planner</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome for the mode icons -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-pVFyHbeXf... (use the full integrity hash) ..."
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+      background: transparent;
+    }
+    #bg-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: -1;
+      pointer-events: none;
+    }
+    .flash-container {
+      position: fixed;
+      top: 70px;
+      width: 100%;
+      z-index: 1050;
+    }
+    /* Highlight styles for Flow and Motion links */
+    .nav-link.flow-active {
+      background-color: rgba(13, 110, 253, 0.25); /* primary tint */
+      border-radius: 0.25rem;
+      color: #0d6efd !important;
+      font-weight: bold;
+    }
+    .nav-link.motion-active {
+      background-color: rgba(25, 135, 84, 0.25); /* success tint */
+      border-radius: 0.25rem;
+      color: #198754 !important;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Video -->
+  <video autoplay muted loop playsinline id="bg-video">
+    <source src="{{ url_for('static', filename='bgvideo.mp4') }}" type="video/mp4">
+  </video>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{{ url_for('main') }}">Shibui</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto align-items-center">
+          {% if me %}
+            <!-- Mode toggles -->
+            <li class="nav-item">
+              <a class="nav-link flow-active" 
+                 data-bs-toggle="tooltip" data-bs-title="Switch to Flow mode"
+                 href="{{ url_for('set_mode', mode='Flow') }}"
+                 {% if mode=='Flow' %}class="flow-active"{% endif %}>
+                <i class="fas fa-brain me-1"></i> Flow
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link motion-active"
+                 data-bs-toggle="tooltip" data-bs-title="Switch to Motion mode"
+                 href="{{ url_for('set_mode', mode='Motion') }}"
+                 {% if mode=='Motion' %}class="motion-active"{% endif %}>
+                <i class="fas fa-running me-1"></i> Motion
+              </a>
+            </li>
+
+            <!-- Planner & Logout -->
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('planner') }}">Planner</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+            </li>
+
+            <!-- Notifications dropdown -->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle position-relative" href="#" id="notifMenu" data-bs-toggle="dropdown">
+                🔔
+                {% if notifications|length %}
+                  <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">
+                    {{ notifications|length }}
+                  </span>
+                {% endif %}
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notifMenu">
+                {% if notifications %}
+                  {% for n in notifications %}
+                    <li>
+                      <span class="dropdown-item small">
+                        {{ n.Type.replace('_',' ').capitalize() }}
+                        (Task {{ n.UserTaskID }}) at
+                        {{ n.CreatedAt|format_datetime('%H:%M') }}
+                      </span>
+                    </li>
+                  {% endfor %}
+                {% else %}
+                  <li>
+                    <span class="dropdown-item text-muted">No notifications</span>
+                  </li>
+                {% endif %}
+              </ul>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Flash Messages -->
+  <div class="flash-container">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-info alert-dismissible fade show text-center mx-auto" role="alert" style="max-width: 600px;">
+          {{ messages[0] }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <!-- Main Content -->
+  <div class="container py-5 mt-5">
+    <!-- Back Button -->
+    <div class="mb-3">
+      <a href="javascript:history.back()" class="btn btn-secondary">← Back</a>
+    </div>
+
+    {% block content %}{% endblock %}
+  </div>
+
+  <!-- Bootstrap Bundle & Auto-dismiss Flash -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    setTimeout(() => {
+      const alertEl = document.querySelector('.alert');
+      if (alertEl) {
+        bootstrap.Alert.getOrCreateInstance(alertEl).close();
+      }
+    }, 2000);
+  </script>
+</body>
+</html>
+
+

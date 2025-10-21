@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container py-5" style="max-width: 680px;">
+  {% if request.args.get('welcome') %}
+    <div class="alert alert-success alert-dismissible fade show text-center mx-auto" role="alert" style="max-width: 600px;">
+      ✅ Logged in successfully!
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  {% endif %}
+
+  <h1 class="display-5 fw-bold text-center mb-3">Welcome, Admin {{ me.UserName }}</h1>
+  <p class="lead text-center mb-4">Use the controls below to manage users, tasks, assignments, and feedback.</p>
+
+  <div class="card shadow-sm bg-light rounded border-0 p-4">
+    <h2 class="h5 mb-3">Admin Dashboard</h2>
+    <div class="list-group">
+      <a href="{{ url_for('manage_user') }}" class="list-group-item list-group-item-action">Manage Users</a>
+      <a href="{{ url_for('list_tasks') }}" class="list-group-item list-group-item-action">Manage Master Tasks</a>
+      <a href="{{ url_for('list_user_tasks') }}?user_id=" class="list-group-item list-group-item-action">Review Task Assignments</a>
+      <a href="{{ url_for('list_feedback') }}?user_id=" class="list-group-item list-group-item-action">Review Feedback</a>
+    </div>
+    <div class="mt-4 text-center">
+      <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Log Out</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

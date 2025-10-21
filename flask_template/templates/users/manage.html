@@ -1,0 +1,106 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container py-5" style="max-width: 600px;">
+  <h1 class="display-5 fw-bold text-center mb-4 text-dark">Edit User</h1>
+
+  {% if obj.errors %}
+    <div class="alert alert-danger text-center mx-auto mb-4" style="max-width:500px;">
+      {% for error in obj.errors %}
+        <div>{{ error }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="card shadow-sm bg-light rounded border-0 mx-auto">
+    <div class="card-body p-4">
+      <form
+        action="{{ url_for('manage_user', action='update', pkval=obj.data[0].UserID) }}"
+        method="POST"
+      >
+        <div class="mb-3">
+          <label for="Username" class="form-label text-dark">User Name</label>
+          <input
+            id="Username"
+            type="text"
+            name="Username"
+            class="form-control"
+            value="{{ obj.data[0].UserName }}"
+            required
+          >
+        </div>
+
+        <div class="mb-3">
+          <label for="UserEmail" class="form-label text-dark">Email</label>
+          <input
+            id="UserEmail"
+            type="email"
+            name="UserEmail"
+            class="form-control"
+            value="{{ obj.data[0].UserEmail }}"
+            required
+          >
+        </div>
+
+        <div class="mb-3">
+          <label for="UserPassword" class="form-label text-dark">
+            Password <small class="text-muted">(leave blank to keep unchanged)</small>
+          </label>
+          <input
+            id="UserPassword"
+            type="password"
+            name="UserPassword"
+            class="form-control"
+          >
+        </div>
+
+        <div class="mb-3">
+          <label for="UserPassword2" class="form-label text-dark">Retype Password</label>
+          <input
+            id="UserPassword2"
+            type="password"
+            name="UserPassword2"
+            class="form-control"
+          >
+        </div>
+
+        <div class="mb-4">
+          <label for="UserType" class="form-label text-dark">User Type</label>
+          <select
+            id="UserType"
+            name="UserType"
+            class="form-select"
+            required
+          >
+            {% for role in obj.user_type %}
+              {% if obj.data[0].UserType == 'Regular' or role.value == 'Administrator' %}
+                <option
+                  value="{{ role.value }}"
+                  {% if obj.data[0].UserType == role.value %}selected{% endif %}
+                >
+                  {{ role.text }}
+                </option>
+              {% endif %}
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="d-grid">
+          <button type="submit" class="btn btn-primary w-100">Save User</button>
+        </div>
+      </form>
+
+      <div class="text-center mt-3">
+        <a
+          href="{{ url_for('manage_user', action='delete', pkval=obj.data[0].UserID) }}"
+          class="btn btn-danger"
+          onclick="return confirm('Are you sure you want to delete this user?')"
+        >
+          Delete User
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

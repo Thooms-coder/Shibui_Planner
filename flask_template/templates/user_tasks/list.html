@@ -1,0 +1,107 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container py-4">
+  <h2 class="mb-4">Task Assignments</h2>
+
+  {# ─── Admin‐only user filter ───────────────────────────────────────────── #}
+  {% if users %}
+    <form method="get" class="mb-3">
+      <div class="input-group">
+        <label class="input-group-text" for="user_filter">User:</label>
+        <select id="user_filter"
+                name="user_id"
+                class="form-select"
+                onchange="this.form.submit()">
+          <option value="">All Users</option>
+          {% for u in users %}
+            <option value="{{ u.UserID }}"
+              {% if user_id_filter == u.UserID|string %}selected{% endif %}>
+              {{ u.UserName }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+    </form>
+  {% endif %}
+
+  <a href="{{ url_for('manage_user_task', action='new') }}"
+     class="btn btn-success mb-4">+ Add New Task</a>
+
+  <div class="row">
+    <!-- Flow Tasks Column -->
+    <div class="col-md-6">
+      <h4 class="text-primary">Flow</h4>
+      {% if flow_tasks %}
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead class="table-light">
+            <tr>
+              <th>Task</th><th>Start</th><th>End</th><th>Int.</th><th>Dur.</th><th>Status</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ut in flow_tasks %}
+            <tr>
+              <td>{{ ut.TaskName }}</td>
+              <td>{{ ut.TaskStartTime|format_datetime('%Y-%m-%d %H:%M') }}</td>
+              <td>{{ ut.TaskEndTime|format_datetime('%Y-%m-%d %H:%M') }}</td>
+              <td>{{ ut.Intensity }}</td>
+              <td>{{ ut.ActualDuration }}</td>
+              <td>{{ ut.TaskStatus }}</td>
+              <td>
+                <a href="{{ url_for('manage_user_task', action='edit', pkval=ut.UserTaskID) }}" class="btn btn-sm btn-primary">Edit</a>
+                {% if me.UserType=='Administrator' %}
+                <a href="{{ url_for('list_user_tasks', action='delete', pkval=ut.UserTaskID) }}" class="btn btn-sm btn-danger" onclick="return confirm('Delete this assignment?');">Delete</a>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+        <div class="alert alert-info">No Flow tasks{% if users %} for this filter{% endif %}.</div>
+      {% endif %}
+    </div>
+
+    <!-- Motion Tasks Column -->
+    <div class="col-md-6">
+      <h4 class="text-success">Motion</h4>
+      {% if motion_tasks %}
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead class="table-light">
+            <tr>
+              <th>Task</th><th>Start</th><th>End</th><th>Int.</th><th>Dur.</th><th>Status</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ut in motion_tasks %}
+            <tr>
+              <td>{{ ut.TaskName }}</td>
+              <td>{{ ut.TaskStartTime|format_datetime('%Y-%m-%d %H:%M') }}</td>
+              <td>{{ ut.TaskEndTime|format_datetime('%Y-%m-%d %H:%M') }}</td>
+              <td>{{ ut.Intensity }}</td>
+              <td>{{ ut.ActualDuration }}</td>
+              <td>{{ ut.TaskStatus }}</td>
+              <td>
+                <a href="{{ url_for('manage_user_task', action='edit', pkval=ut.UserTaskID) }}" class="btn btn-sm btn-primary">Edit</a>
+                {% if me.UserType=='Administrator' %}
+                <a href="{{ url_for('list_user_tasks', action='delete', pkval=ut.UserTaskID) }}" class="btn btn-sm btn-danger" onclick="return confirm('Delete this assignment?');">Delete</a>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+        <div class="alert alert-info">No Motion tasks{% if users %} for this filter{% endif %}.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+

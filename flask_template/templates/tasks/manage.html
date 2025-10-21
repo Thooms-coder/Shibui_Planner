@@ -1,0 +1,197 @@
+{% extends "layout.html" %}
+
+{#── same corrected lookups for editing ──#}
+{% set subMap = {
+  'Flow': [
+    'Deep Work',
+    'Meetings and Collaboration',
+    'Creative Work',
+    'Planning and Organization',
+    'Learning and Skill Development'
+  ],
+  'Motion': [
+    'Cardio & Endurance',
+    'Strength & Resistance',
+    'Flexibility & Recovery',
+    'Sports & Recreation',
+    'Outdoor & Active Lifestyle'
+  ]
+} %}
+
+{% set defaults = {
+  'Deep Work':                      {'intensity':8,'duration':50},
+  'Meetings and Collaboration':     {'intensity':5,'duration':30},
+  'Creative Work':                  {'intensity':7,'duration':45},
+  'Planning and Organization':      {'intensity':4,'duration':40},
+  'Learning and Skill Development': {'intensity':6,'duration':60},
+  'Cardio & Endurance':             {'intensity':7,'duration':30},
+  'Strength & Resistance':          {'intensity':9,'duration':45},
+  'Flexibility & Recovery':         {'intensity':3,'duration':20},
+  'Sports & Recreation':            {'intensity':8,'duration':60},
+  'Outdoor & Active Lifestyle':     {'intensity':6,'duration':90}
+} %}
+
+{% block content %}
+<div class="container py-4" style="max-width:600px;">
+  <h2 class="text-center mb-4">Edit Task</h2>
+
+  {% if obj.errors %}
+    <div class="alert alert-danger">
+      {% for e in obj.errors %}
+        <div>{{ e }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <form
+    action="{{ url_for('manage_task', action='update', pk=obj.data[0].TaskID) }}"
+    method="POST"
+    class="card p-4 shadow-sm bg-light rounded"
+  >
+    <!-- Task Name -->
+    <div class="mb-3">
+      <label for="TaskName" class="form-label">Task Name</label>
+      <input
+        type="text"
+        id="TaskName"
+        name="TaskName"
+        class="form-control"
+        value="{{ obj.data[0].TaskName|default('') }}"
+        required
+      >
+    </div>
+
+    <!-- Category -->
+    <div class="mb-3">
+      <label for="TaskCategory" class="form-label">Category</label>
+      <select
+        id="TaskCategory"
+        name="TaskCategory"
+        class="form-select"
+        required
+      >
+        <option value="" disabled>Select a category</option>
+        {% for cat in ['Flow','Motion'] %}
+          <option
+            value="{{ cat }}"
+            {% if obj.data[0].TaskCategory == cat %}selected{% endif %}
+          >{{ cat }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Subcategory -->
+    <div class="mb-3">
+      <label for="TaskSubcategory" class="form-label">Subcategory</label>
+      <select
+        id="TaskSubcategory"
+        name="TaskSubcategory"
+        class="form-select"
+        required
+      >
+        {# define the two lists #}
+        {% set flow = [
+          'Deep Work', 'Meetings & Collaboration', 'Creative Work',
+          'Planning & Organization', 'Learning & Skill Development'] %}
+        {% set motion = [
+          'Cardio & Endurance', 'Strength & Resistance', 'Flexibility & Recovery',
+          'Sports & Recreation', 'Outdoor & Active Lifestyle'] %}
+
+        {# pick the right one based on TaskCategory #}
+        {% set subcats = flow if obj.data[0].TaskCategory == 'flow' else motion %}
+
+        {# render options #}
+        <option value="" disabled>Select a subcategory</option>
+        {% for s in subcats %}
+          <option value="{{ s }}"
+                  {% if s == obj.data[0].TaskSubcategory %}selected{% endif %}>
+            {{ s }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+
+    <!-- Default Intensity -->
+    <div class="mb-3">
+      <label for="DefaultIntensity" class="form-label">
+        Default Intensity (1–10)
+      </label>
+      <input
+        type="number"
+        id="DefaultIntensity"
+        name="DefaultIntensity"
+        class="form-control"
+        min="1" max="10"
+        value="{{ obj.data[0].DefaultIntensity|default('') }}"
+        required
+      >
+    </div>
+
+    <!-- Default Duration -->
+    <div class="mb-3">
+      <label for="DefaultDuration" class="form-label">
+        Default Duration (minutes)
+      </label>
+      <input
+        type="number"
+        id="DefaultDuration"
+        name="DefaultDuration"
+        class="form-control"
+        min="1"
+        value="{{ obj.data[0].DefaultDuration|default('') }}"
+        required
+      >
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">
+      Save Changes
+    </button>
+  </form>
+</div>
+
+<script>
+// inject them as JSON so JS sees plain objects
+const subMap   = {{ subMap   | tojson }};
+const defaults = {{ defaults | tojson }};
+
+const categoryEl    = document.getElementById('TaskCategory');
+const subcategoryEl = document.getElementById('TaskSubcategory');
+const intensityEl   = document.getElementById('DefaultIntensity');
+const durationEl    = document.getElementById('DefaultDuration');
+
+// refill subcategories & clear when category changes
+categoryEl.addEventListener('change', () => {
+  subcategoryEl.innerHTML = '<option value="" disabled>Select a subcategory</option>';
+  (subMap[categoryEl.value]||[]).forEach(sub => {
+    const opt = document.createElement('option');
+    opt.value = opt.textContent = sub;
+    subcategoryEl.appendChild(opt);
+  });
+  intensityEl.value = '';
+  durationEl.value  = '';
+});
+
+// apply defaults when subcategory changes
+subcategoryEl.addEventListener('change', () => {
+  const cfg = defaults[subcategoryEl.value];
+  if (cfg) {
+    intensityEl.value = cfg.intensity;
+    durationEl.value  = cfg.duration;
+  }
+});
+
+// on load: preselect existing values
+window.addEventListener('DOMContentLoaded', () => {
+  const existingCat = {{ obj.data[0].TaskCategory|default('')|tojson }};
+  const existingSub = {{ obj.data[0].TaskSubcategory|default('')|tojson }};
+  if (existingCat) {
+    categoryEl.value = existingCat;
+    categoryEl.dispatchEvent(new Event('change'));
+    if (existingSub) {
+      subcategoryEl.value = existingSub;
+    }
+  }
+});
+</script>
+{% endblock %}

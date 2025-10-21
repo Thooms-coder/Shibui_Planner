@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container py-5" style="max-width: 680px;">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">📜 Task History</h2>
+    <a href="{{ url_for('planner') }}" class="btn btn-outline-primary">← Back to Planner</a>
+  </div>
+
+  {% if tasks and tasks|length > 0 %}
+    <div class="table-responsive">
+      <table class="table table-striped table-hover table-bordered">
+        <thead class="table-light">
+          <tr>
+            <th>Task</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Duration (min)</th>
+            <th>Mood Change</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for task in tasks %}
+          <tr>
+            <td>{{ task.TaskName }}</td>
+            <td>{{ task.TaskCategory }}</td>
+            <td>{{ task.TaskStatus|replace('_',' ')|capitalize }}</td>
+            <td>{{ task.TaskStartTime|format_datetime('%Y-%m-%d %H:%M') }}</td>
+            <td>{{ task.TaskEndTime|format_datetime('%Y-%m-%d %H:%M') }}</td>
+            <td>{{ task.ActualDuration or '–' }}</td>
+            <td>
+              {% if task.MoodBefore is not none and task.MoodAfter is not none %}
+                {{ task.MoodAfter - task.MoodBefore }}
+              {% else %}
+                N/A
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert alert-info text-center">No task history available.</div>
+  {% endif %}
+</div>
+{% endblock %}
+
+
