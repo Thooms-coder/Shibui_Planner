@@ -10,7 +10,7 @@ Extends baseObject with:
 • get_feedback_by_user()
 """
 
-from baseObject import baseObject
+from flask_template.baseObject import baseObject
 import datetime
 
 
