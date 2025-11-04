@@ -12,10 +12,10 @@ from pathlib import Path
 from flask import current_app
 
 # Model classes
-from user import user
-from task import task
-from user_task import user_task
-from feedback import feedback
+from flask_template.user import user
+from flask_template.task import task
+from flask_template.user_task import user_task
+from flask_template.feedback import feedback
 
 # ─── App setup ───────────────────────────────────────────────────────────────
 app = Flask(__name__, static_url_path='')

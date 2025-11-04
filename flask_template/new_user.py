@@ -1,4 +1,4 @@
-from user import user
+from flask_template.user import user
 u = user()
 d = {'UserName': 'Gordi', 'UserEmail': 'gordi@yahoo.com', 'UserPassword': 'abc', 'UserPassword2': 'abc', 'UserType': 'Regular'}
 u.set(d)
