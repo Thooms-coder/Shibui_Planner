@@ -10,7 +10,12 @@
 
 <h2 class="mb-4 text-center text-dark">Welcome to Shibui</h2>
 
-<form action="{{ url_for('login') }}" method="POST">
+<p class="text-center text-muted small mb-4">
+  Demo version — database connection is currently offline.<br>
+  Interface and deployment remain active for demonstration purposes.
+</p>
+
+<form action="{{ url_for('login') }}" method="POST" class="mx-auto" style="max-width: 400px;">
   <div class="mb-3">
     <label for="email" class="form-label text-dark">Email address</label>
     <input type="email" name="Email" class="form-control" id="email" required>
@@ -26,7 +31,11 @@
   </div>
 
   <div class="d-grid gap-2">
-    <button type="submit" class="btn btn-primary">Log In</button>
+    <button type="submit" class="btn btn-primary" disabled>Log In</button>
   </div>
+
+  <p class="text-center text-muted small mt-3">
+    (Login temporarily disabled for demo.)
+  </p>
 </form>
 {% endblock %}

@@ -5,7 +5,7 @@
 </h1>
 
 <p align="center">
-  <a href="https://shibui.onrender.com" target="_blank">
+  <a href="https://shibui-planner.onrender.com/login" target="_blank">
     <img src="https://img.shields.io/badge/Launch_Live_App-4CAF50?style=for-the-badge" alt="Launch Live App">
   </a>
 </p>
@@ -22,14 +22,29 @@
 ## Overview
 
 **Shibui** is a Flask-based web application designed to help users maintain balance between productivity and wellness.  
-It organizes daily activities into two equally important domains—**Flow** (work-related tasks) and **Motion** (physical activity)—emphasizing structure, reflection, and consistent balance throughout the day.
+It organizes daily activities into two equally important domains—**Flow** (work-related tasks) and **Motion** (physical activity)—emphasizing structure, reflection, and consistency throughout the day.
 
-The application supports two user roles with distinct permissions and includes features for task tracking, habit management, mood recording, and guided activity planning.
+This project demonstrates full-stack design with a MySQL backend, Flask-Session authentication, SQL-based analytics, and a responsive Bootstrap interface.  
+The live version currently hosts the **login interface** only, as the original university database has been retired.  
+
+---
+
+## Live Demo
+
+<p align="center">
+  <a href="https://shibui-planner.onrender.com/login" target="_blank">
+    <img src="https://img.shields.io/badge/Launch_Sh­ibui_Planner-1976D2?style=for-the-badge" alt="Launch Shibui Planner">
+  </a>
+</p>
+
+> **Note:** The demo displays the live login interface only.  
+> Backend database integration was hosted on a university MySQL server and is currently offline.
 
 ---
 
 ## Table of Contents
 - [Overview](#overview)
+- [Live Demo](#live-demo)
 - [Table of Contents](#table-of-contents)
 - [Users and Permissions](#users-and-permissions)
 - [Task Life Cycle](#task-life-cycle)
@@ -38,6 +53,7 @@ The application supports two user roles with distinct permissions and includes f
 - [Relational Schema](#relational-schema)
   - [Table Summary](#table-summary)
 - [Analytics Examples](#analytics-examples)
+- [Repository Link](#repository-link)
 
 ---
 
@@ -54,8 +70,9 @@ The application supports two user roles with distinct permissions and includes f
 
 A task progresses through the following states automatically or manually:
 
+```
 pending → in_progress → completed
-
+```
 
 Status updates occur dynamically based on scheduled start and end times.
 
@@ -63,13 +80,13 @@ Status updates occur dynamically based on scheduled start and end times.
 
 ## Features
 
-- Task categorization under **Flow** and **Motion** modes.  
-- Tracking of intensity, duration, and mood before and after each task.  
-- Role-based permissions with administrative controls.  
-- Persistent session management using Flask-Session.  
-- MySQL 8 backend with SQLAlchemy ORM-style modeling.  
-- Responsive Bootstrap 5 interface.  
-- Integrated analytics for mood trends, task duration, and engagement.  
+- Two functional modes: **Flow** (work) and **Motion** (physical activity).  
+- Intensity, duration, and mood tracking before and after each task.  
+- Role-based permissions for users and administrators.  
+- Persistent session management using `Flask-Session`.  
+- MySQL 8 backend integrated through ORM-style modeling.  
+- Clean, responsive Bootstrap 5 interface.  
+- Analytical SQL queries for mood, duration, and productivity trends.  
 
 ---
 
@@ -97,8 +114,8 @@ Status updates occur dynamically based on scheduled start and end times.
 |--------|----------|
 | **mmungoshi_user** | Stores user credentials, profiles, and access roles. |
 | **mmungoshi_task** | Repository of all predefined and user-defined tasks. |
-| **mmungoshi_user_task** | Links users to specific task instances with time and mode data. |
-| **mmungoshi_feedback** | Records user reflections and mood metrics after task completion. |
+| **mmungoshi_user_task** | Links users to specific task instances with scheduling and mode data. |
+| **mmungoshi_feedback** | Records user reflections, mood changes, and performance metrics. |
 
 ---
 
@@ -137,4 +154,17 @@ WHERE   t.TaskCategory = 'flow'
 GROUP BY u.UserID
 ORDER BY Minutes DESC
 LIMIT 5;
+```
 
+---
+
+## Repository Link
+
+📂 [GitHub Repository – Shibui Planner](https://github.com/Thooms-coder/Shibui_Planner)  
+🌐 [Live App – Login Demo](https://shibui-planner.onrender.com/login)
+
+---
+
+<p align="center">
+  <small>Developed by Mutsa Mungoshi — M.S. in Applied Data Science, Clarkson University</small>
+</p>
