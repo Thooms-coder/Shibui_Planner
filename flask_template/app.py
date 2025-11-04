@@ -978,20 +978,50 @@ def compute_balance_score(tasks):
     return round(total/len(tasks),2)
 
 # ─── DB Helpers ─────────────────────────────────────────────────────────────
+
 def dbconnect():
-    cfg = yaml.safe_load((Path(__file__).parent/"config.yml").read_text())['db']
-    return pymysql.connect(host=cfg['host'], port=cfg.get('port',3306),
-                           user=cfg['user'], password=cfg['pw'],
-                           database=cfg['db'], autocommit=True)
+    """
+    Establishes a MySQL connection.
+    - On Render: reads credentials from environment variables.
+    - Locally: falls back to config.yml in the same folder.
+    """
+    if os.getenv("DB_HOST"):  # Render / production
+        return pymysql.connect(
+            host=os.getenv("DB_HOST"),
+            port=int(os.getenv("DB_PORT", 3306)),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PW"),
+            database=os.getenv("DB_NAME"),
+            autocommit=True
+        )
+    # Fallback for local development
+    cfg_path = Path(__file__).parent / "config.yml"
+    cfg = yaml.safe_load(cfg_path.read_text())["db"]
+    return pymysql.connect(
+        host=cfg["host"],
+        port=cfg.get("port", 3306),
+        user=cfg["user"],
+        password=cfg["pw"],
+        database=cfg["db"],
+        autocommit=True
+    )
+
 
 def dbselect(query, params=None):
-    conn   = dbconnect(); cursor = conn.cursor(pymysql.cursors.DictCursor)
+    conn = dbconnect()
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     cursor.execute(query, params or [])
-    data = cursor.fetchall(); conn.close(); return data
+    data = cursor.fetchall()
+    conn.close()
+    return data
+
 
 def dbupdate(query, params=None):
-    conn   = dbconnect(); cursor = conn.cursor()
-    cursor.execute(query, params or []); conn.commit(); conn.close()
+    conn = dbconnect()
+    cursor = conn.cursor()
+    cursor.execute(query, params or [])
+    conn.commit()
+    conn.close()
 
 # ─── Task History ────────────────────────────────────────────────────────────
 @app.route('/task_history')
