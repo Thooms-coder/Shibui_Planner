@@ -1,9 +1,9 @@
 db:
-  user: 'root'
-  pw: 'Badluck13.'
-  host: 'localhost'
-  db: 'shibui_planner'
-  port: 3306
+  user: 'shibui_planner_stillsport'
+  pw: '0b5c3f5145731ff1fe2072716cd15895e7b0a402'
+  host: 'zgzufe.h.filess.io'
+  db: 'shibui_planner_stillsport'
+  port: 3307
 
 tables:
   user: 'mmungoshi_user'
