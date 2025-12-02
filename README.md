@@ -58,6 +58,7 @@ This project showcases:
 - [Live Demo](#live-demo)
 - [Table of Contents](#table-of-contents)
 - [Users and Permissions](#users-and-permissions)
+- [Demo Accounts (All Passwords = `abc`)](#demo-accounts-all-passwords--abc)
 - [Task Life Cycle](#task-life-cycle)
 - [Features](#features)
 - [Flow and Motion Categories](#flow-and-motion-categories)
@@ -74,6 +75,18 @@ This project showcases:
 |------|--------------|
 | **Regular User** | Create, edit, and view personal tasks; cannot delete shared or system-defined tasks. |
 | **Administrator** | Manage all users, assign shared tasks, and perform full CRUD operations across entities. |
+
+## Demo Accounts (All Passwords = `abc`)
+
+The following demo accounts are available for testing:
+
+| Name      | Email                   | Role           | Password |
+|-----------|--------------------------|----------------|----------|
+| Mutsa     | mungosmj@clarkson.edu    | Administrator  | `abc`    |
+| Jane      | jane@example.com         | Regular User   | `abc`    |
+| Tyler     | tyler@clarkson.com       | Regular User   | `abc`    |
+| Sean      | seanlock@comedian.com    | Administrator  | `abc`    |
+| Harry     | yeat808@gmail.com        | Regular User   | `abc`    |
 
 ---
 
