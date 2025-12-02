@@ -114,27 +114,16 @@ def checkSession():
         return True
     return False
 
-@app.route('/login', methods=['GET','POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        print("RAW FORM:", request.form)  # ← DEBUG 1
-
         email = request.form.get('Email')
         pw    = request.form.get('Password')
 
-        print("EMAIL:", email)           # ← DEBUG 2
-        print("PW:", pw)                 # ← DEBUG 3
-
         u = user()
-
-        ok = u.tryLogin(email, pw)
-        print("TRYLOGIN RETURN:", ok)    # ← DEBUG 4
-        print("TRYLOGIN DATA:", u.data)  # ← DEBUG 5
-
-        if ok:
-            print("LOGIN SUCCESS — storing session")
-            session['user'] = u.data[0]
-            session['mode'] = 'Flow'
+        if u.tryLogin(email, pw):
+            session['user']   = u.data[0]
+            session['mode']   = 'Flow'
             session['active'] = time.time()
             session.permanent = True
             return redirect(url_for('main'))
