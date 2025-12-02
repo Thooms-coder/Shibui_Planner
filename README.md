@@ -21,13 +21,24 @@
 
 ## Overview
 
-**Shibui** is a Flask-based web application designed to help users maintain balance between productivity and wellness.  
-It organizes daily activities into two equally important domains—**Flow** (work-related tasks) and **Motion** (physical activity)—emphasizing structure, reflection, and consistency throughout the day.
+**Shibui** is a Flask-based productivity and wellness planner that organizes daily activities across two interconnected domains:
 
-This project demonstrates full-stack design with a MySQL backend, Flask-Session authentication, SQL-based analytics, and a responsive Bootstrap interface.  
-The live version currently hosts the **login interface** only, as the original university database has been retired.  
+- **Flow** — structured work and cognitive tasks  
+- **Motion** — physical activity, wellness, and movement  
 
----
+It emphasizes reflection, habit-building, and maintaining a sustainable work–life rhythm.
+
+This project showcases:
+
+- Flask full-stack development  
+- MySQL relational modeling  
+- Session-based authentication  
+- SQL analytics  
+- Bootstrap UI  
+- Role-based access design  
+
+> **Shibui is now fully functional with a new MySQL database backend.**  
+> The live application includes authentication, task management, feedback logging, analytics views, and planner dashboards.
 
 ## Live Demo
 
@@ -37,8 +48,8 @@ The live version currently hosts the **login interface** only, as the original u
   </a>
 </p>
 
-> **Note:** The demo displays the live login interface only.  
-> Backend database integration was hosted on a university MySQL server and is currently offline.
+> **Note:** The live version now uses a new MySQL backend, enabling full access to Shibui’s core features (user login, task management, planner, and analytics).
+
 
 ---
 

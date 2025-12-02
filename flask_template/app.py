@@ -42,6 +42,9 @@ app.jinja_env.filters['format_datetime'] = format_datetime
 @app.before_request
 def process_transitions():
     g.notifications = []
+    # allow login/logout without blocking
+    if request.endpoint in ('login', 'logout', 'static'):
+        return
     if 'user' not in session:
         return
     now_str = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
@@ -114,14 +117,30 @@ def checkSession():
 @app.route('/login', methods=['GET','POST'])
 def login():
     if request.method == 'POST':
+        print("RAW FORM:", request.form)  # ← DEBUG 1
+
+        email = request.form.get('Email')
+        pw    = request.form.get('Password')
+
+        print("EMAIL:", email)           # ← DEBUG 2
+        print("PW:", pw)                 # ← DEBUG 3
+
         u = user()
-        if u.tryLogin(request.form['Email'], request.form['Password']):
-            session['user']   = u.data[0]
-            session['mode']   = 'Flow'
+
+        ok = u.tryLogin(email, pw)
+        print("TRYLOGIN RETURN:", ok)    # ← DEBUG 4
+        print("TRYLOGIN DATA:", u.data)  # ← DEBUG 5
+
+        if ok:
+            print("LOGIN SUCCESS — storing session")
+            session['user'] = u.data[0]
+            session['mode'] = 'Flow'
             session['active'] = time.time()
             session.permanent = True
             return redirect(url_for('main'))
+
         flash("Incorrect username or password.", 'danger')
+
     return render_template('login.html')
 
 @app.route('/logout', methods=['GET','POST'])

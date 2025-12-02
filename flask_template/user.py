@@ -102,11 +102,18 @@ class user(baseObject):
     # ----------------------------------------------------------------------
     # Authentication
     # ----------------------------------------------------------------------
-    def tryLogin(self, email, pw):
+    def tryLogin(self,email,pw):
+        print("TRYLOGIN INPUT:", email, pw)
+
         pw = self.hashPassword(pw)
+        print("HASHED PW:", pw)
+
         sql = f"SELECT * FROM `{self.tn}` WHERE `UserEmail` = %s AND `UserPassword` = %s;"
-        tokens = [email, pw]
-        print(sql, tokens)
-        self.cur.execute(sql, tokens)
-        self.data = [row for row in self.cur]
+        print("SQL:", sql)
+        print("PARAMS:", [email, pw])
+
+        self.cur.execute(sql, [email, pw])
+        self.data = list(self.cur.fetchall())
+        print("QUERY RESULT:", self.data)
+
         return len(self.data) == 1
