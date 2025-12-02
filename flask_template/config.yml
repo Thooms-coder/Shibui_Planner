@@ -1,12 +1,12 @@
 db:
-  user: 'ia637'
-  pw: 'ia637clarkson'
-  host: 'mysql.clarksonmsda.org'
-  db: 'ia637'
+  user: 'root'
+  pw: 'Badluck13.'
+  host: 'localhost'
+  db: 'shibui_planner'
   port: 3306
+
 tables:
   user: 'mmungoshi_user'
   task: 'mmungoshi_task'
   user_task: 'mmungoshi_user_task'
   feedback: 'mmungoshi_feedback'
-

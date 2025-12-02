@@ -2,77 +2,94 @@ from flask_template.baseObject import baseObject
 import datetime
 
 class user_task(baseObject):
+
+    VALID_STATUSES = {'pending', 'in_progress', 'completed'}
+
     def __init__(self):
         self.setup()
 
-    def is_valid_status(self, status: str) -> bool:
-        """Return True if status is one of the allowed literals."""
-        valid = {'pending', 'in_progress', 'completed'}   # ← UPDATED
-        return status in valid
+    # ──────────────────────────────────────────────────────────────
+    # Helpers
+    # ──────────────────────────────────────────────────────────────
+    def normalize_status(self, s):
+        """Convert any human-entered value into a DB-valid enum literal."""
+        if not s:
+            return 'pending'
 
+        s = s.strip().lower().replace(" ", "_")
+        return s if s in self.VALID_STATUSES else 'pending'
+
+    # ──────────────────────────────────────────────────────────────
+    # Validation
+    # ──────────────────────────────────────────────────────────────
     def verify_new(self, n=0):
-        """
-        Validate a new user_task assignment before insert.
-        Checks required fields and status validity.
-        """
         self.errors = []
         data = self.data[n]
 
-        # Required fields for scheduling
-        required_fields = [
-            'UserID',
-            'TaskID',
-            'TaskStartTime',
-            'Intensity',
-            'ActualDuration',
-            'TaskStatus'
-        ]
-        for field in required_fields:
-            if not data.get(field):
+        required = ['UserID', 'TaskID', 'TaskStartTime', 'Intensity', 'ActualDuration']
+        for field in required:
+            if data.get(field) in (None, ''):
                 self.errors.append(f"{field} is required.")
 
-        # Validate status value
-        if not self.is_valid_status(data.get('TaskStatus', '')):
-            self.errors.append('Invalid TaskStatus.')
+        # Normalize & validate status
+        status = self.normalize_status(data.get('TaskStatus'))
+        data['TaskStatus'] = status
+
+        if status not in self.VALID_STATUSES:
+            self.errors.append("Invalid TaskStatus.")
 
         return len(self.errors) == 0
 
     def verify_update(self, n=0):
-        """
-        For updates, use the same validation as for new assignments.
-        """
-        return self.verify_new(n)
+        """Updates allow partial modification; only validate fields present."""
+        self.errors = []
+        data = self.data[n]
 
+        if 'TaskStatus' in data:
+            data['TaskStatus'] = self.normalize_status(data['TaskStatus'])
+            if data['TaskStatus'] not in self.VALID_STATUSES:
+                self.errors.append("Invalid TaskStatus.")
+
+        return len(self.errors) == 0
+
+    # ──────────────────────────────────────────────────────────────
+    # State Transitions
+    # ──────────────────────────────────────────────────────────────
     def start_task(self, user_task_id):
-        """
-        Transition a task from 'Pending' to 'In Progress'.
-        Record TaskStartTime if not already set.
-        """
         self.getById(user_task_id)
         if not self.data:
             self.errors.append("User task not found.")
             return False
-        if self.data[0]['TaskStatus'] != 'Pending':
-            self.errors.append("Task is not in 'Pending' state.")
+
+        row = self.data[0]
+        if row['TaskStatus'] != 'pending':
+            self.errors.append("Task is not in 'pending' state.")
             return False
-        self.data[0]['TaskStatus'] = 'In Progress'
-        if not self.data[0].get('TaskStartTime'):
-            self.data[0]['TaskStartTime'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        self.update()
+
+        # Only change status
+        row['TaskStatus'] = 'in_progress'
+
+        # Only set start time if missing
+        if not row.get('TaskStartTime'):
+            row['TaskStartTime'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        self.update(0)
         return True
 
     def complete_task(self, user_task_id):
-        """
-        Transition a task from any valid status to 'Complete',
-        recording TaskEndTime if not already set.
-        """
         self.getById(user_task_id)
         if not self.data:
             self.errors.append("User task not found.")
             return False
-        self.data[0]['TaskStatus'] = 'Complete'
-        if not self.data[0].get('TaskEndTime'):
-            self.data[0]['TaskEndTime'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        self.update()
+
+        row = self.data[0]
+
+        row['TaskStatus'] = 'completed'
+
+        # Only set end time if missing
+        if not row.get('TaskEndTime'):
+            row['TaskEndTime'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        self.update(0)
         return True
 

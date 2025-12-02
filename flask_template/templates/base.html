@@ -96,7 +96,7 @@
                   {% for n in notifications %}
                     <li>
                       <span class="dropdown-item small">
-                        {{ n.Type.replace('_',' ').capitalize() }}
+                        {{ n.Type | replace('_',' ') | capitalize }}
                         (Task {{ n.UserTaskID }}) at {{ n.CreatedAt|format_datetime('%H:%M') }}
                       </span>
                     </li>

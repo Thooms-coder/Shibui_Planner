@@ -10,6 +10,7 @@ import pymysql
 import yaml
 from pathlib import Path
 from flask import current_app
+import os
 
 # Model classes
 from flask_template.user import user
@@ -48,7 +49,7 @@ def process_transitions():
     # Pending → In Progress
     rows = dbselect(
         "SELECT UserTaskID FROM mmungoshi_user_task "
-        "WHERE TaskStatus='Pending' AND TaskStartTime <= %s",
+        "WHERE TaskStatus='pending' AND TaskStartTime <= %s",
         [now_str]
     )
     if rows:
@@ -295,7 +296,6 @@ def manage_task():
         conn = dbconnect()                     # <-- open a fresh connection
         try:
             with conn.cursor() as cur:
-                cur.execute("DELETE FROM mmungoshi_feedback WHERE UserID = %s", (pk,))
 
                 # 1) delete feedback rows linked to this task
                 cur.execute(

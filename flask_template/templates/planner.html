@@ -15,7 +15,7 @@
 
 {% if tasks %}
   {% for task in tasks %}
-  <div class="card mb-3">
+  <div class="card mb-3 border-{% if task.TaskCategory == 'Flow' %}primary{% else %}success{% endif %}">
     <div class="card-body">
       <h5 class="card-title">
         {{ task.TaskName }}
@@ -25,42 +25,44 @@
       </h5>
 
       <p class="card-text mb-2">
-        <strong>Subcategory:</strong> {{ task.TaskSubcategory }}<br>
+        <strong>Subcategory:</strong> {{ task.TaskSubcategory }} <br>
         <strong>Status:</strong>
-        {{ task.TaskStatus|replace('_',' ')|capitalize }}
+        {{ task.TaskStatus | replace('_',' ') | title }}
       </p>
 
       <p class="card-text mb-2">
-        <strong>Duration:</strong> {{ task.ActualDuration }} min<br>
-        <strong>Intensity:</strong> {{ task.FeedbackIntensity }}
+        <strong>Duration:</strong> {{ task.ActualDuration or task.DefaultDuration }} min <br>
+        <strong>Intensity:</strong> {{ task.FeedbackIntensity or task.Intensity }}
       </p>
 
-      <!-- Mood Before Slider (read-only) -->
+      <!-- Mood Before -->
       <div class="mb-3">
         <label for="mb-{{ task.UserTaskID }}" class="form-label">
-          Mood Before: <strong>{{ task.MoodBefore }}</strong>
+          Mood Before:
+          <strong>{{ task.MoodBefore if task.MoodBefore is not none else '—' }}</strong>
         </label>
         <input
           type="range"
           class="form-range"
           id="mb-{{ task.UserTaskID }}"
           min="1" max="10"
-          value="{{ task.MoodBefore }}"
+          value="{{ task.MoodBefore or 5 }}"
           disabled
         >
       </div>
 
-      <!-- Mood After Slider (read-only) -->
+      <!-- Mood After -->
       <div class="mb-3">
         <label for="ma-{{ task.UserTaskID }}" class="form-label">
-          Mood After: <strong>{{ task.MoodAfter }}</strong>
+          Mood After:
+          <strong>{{ task.MoodAfter if task.MoodAfter is not none else '—' }}</strong>
         </label>
         <input
           type="range"
           class="form-range"
           id="ma-{{ task.UserTaskID }}"
           min="1" max="10"
-          value="{{ task.MoodAfter }}"
+          value="{{ task.MoodAfter or 5 }}"
           disabled
         >
       </div>
@@ -89,6 +91,7 @@
     📈 View Task History
   </a>
 </div>
+
 {% endblock %}
 
 
